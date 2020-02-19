@@ -19,3 +19,4 @@ img_name = "10006_SID_train.png"
 # normalized = (input_arr-(input_arr.min()))/((input_arr.max())-(input_arr.min()))
 # print(normalized)
 
+chi_rng = np.random_uniform(shape=[1, 1, 1], minval=0.001, maxval=self.lam_max)

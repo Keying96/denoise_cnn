@@ -38,9 +38,9 @@ import matplotlib.pyplot as plt
 
 gt_dir = "./dataset/train_groundTruth/"
 train_dir = "./dataset/train/"
-save_train_dir = "./dataset/save_train/0"
+save_train_dir = "./dataset/save_train/train"
 save_gt_dir = "./dataset/save_train/1"
-checkpoint_path = "./dataset/checkpoint/model.h5"
+checkpoint_path = "./dataset/checkpoint/"
 
 num_gt = len(os.listdir(gt_dir))
 num_tr = len(os.listdir(train_dir))
@@ -49,7 +49,7 @@ print ("total training images: {}". format(num_tr))
 print ("--")
 
 batch_size = 2
-epochs = 15
+epochs = 2
 IMG_HEIGHT = 512
 IMG_WIDTH = 512
 # rescale = 1./255
@@ -96,14 +96,18 @@ def data_generator(train_dir, gt_dir, rescale, batch_size,
                                             color_mode= "grayscale",
                                             save_to_dir=save_gt_dir)
 
-    train_generator = (pair for pair in zip(train_data_gen, gt_data_gen))
+    train_generator = zip(train_data_gen, gt_data_gen)
+    for (train_img, pre_img) in train_generator:
+        yield (train_img, pre_img)
+    # train_generator = (pair for pair in zip(train_data_gen, gt_data_gen))
     # train_generator =  zip(train_data_gen, gt_data_gen)
     # yield train_generator
     # yield train_data_gen, gt_data_gen
     # yield  train_data_gen
 
 def compute_ramped_down_lrate():
-    return  learning_rate
+    # return  learning_rate
+    pass
 
 def l1_loss_function(y_true, y_pre):
     return tf.reduce_mean(tf.abs(y_true - y_pre))
@@ -134,21 +138,21 @@ if __name__ == '__main__':
 
     model.save_weights(checkpoint_path)
 
-        # # visualize training results
-        # acc = history.history["accuracy"]
-        # loss = history.history["loss"]
-        # epochs_range = range(epochs)
-        #
-        # plt.figure(figsize=(8, 8))
-        # plt.subplot(1, 2, 1)
-        # plt.plot(epochs_range, acc, label='Training Accuracy')
-        # # plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-        # plt.legend(loc='lower right')
-        # plt.title('Training and Validation Accuracy')
-        #
-        # plt.subplot(1, 2, 2)
-        # plt.plot(epochs_range, loss, label='Training Loss')
-        # # plt.plot(epochs_range, val_loss, label='Validation Loss')
-        # plt.legend(loc='upper right')
-        # plt.title('Training and Validation Loss')
-        # plt.show()
+    # visualize training results
+    acc = history.history["accuracy"]
+    loss = history.history["loss"]
+    epochs_range = range(epochs)
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, acc, label='Training Accuracy')
+    # plt.plot(epochs_range, val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, loss, label='Training Loss')
+    # plt.plot(epochs_range, val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.title('Training and Validation Loss')
+    plt.show()
