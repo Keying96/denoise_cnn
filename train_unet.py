@@ -32,8 +32,8 @@ import matplotlib.pyplot as plt
 gt_dir = "./dataset/myData/gt_test"
 checkpoint_path = "./dataset/checkpoint/"
 
-batch_size = 1
-epochs = 15
+batch_size = 6
+epochs = 2
 SAVE_EVERY = 2
 crop_size = 512
 lam_max = 20
