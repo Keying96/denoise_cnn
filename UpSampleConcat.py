@@ -11,7 +11,8 @@ class UpSampleConcat(layers.Layer):
         self.pool_size = 2
         self.output_channels = output_channels
         self.in_channels = in_channels
-        self.W = tf.Variable(tf.random.truncated_normal([2, 2, output_channels, in_channels], stddev=0.02), name = "weight")
+        self.W = tf.Variable(tf.random.truncated_normal([2, 2, output_channels, in_channels],
+                                                        stddev=0.02), name = "weight")
         super(UpSampleConcat, self).__init__(**kwargs)
 
 
@@ -28,3 +29,9 @@ class UpSampleConcat(layers.Layer):
 
         return deconv_output
 
+    # custom layer to be serializable as part of a functional model
+    def get_config(self):
+        config = super(UpSampleConcat,self).get_config()
+        config.update({"output_channels": self.output_channels,
+                      "in_channels": self.in_channels})
+        return config
