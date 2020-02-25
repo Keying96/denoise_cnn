@@ -18,7 +18,6 @@ save_freq = 500
 """
 from model import *
 from data_prepare.data_augment import *
-from data_prepare.data_augment import *
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
@@ -29,23 +28,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-gt_dir = "./dataset/myData/gt_test"
+gt_dir = "./dataset/myData/gt"
 checkpoint_path = "./dataset/checkpoint/"
 
 batch_size = 6
-epochs = 2
+epochs = 10
 SAVE_EVERY = 2
 crop_size = 512
 lam_max = 20
 
-def plotImages(images_arr):
-    fig, axes = plt.subplots(1, 5, figsize=(20, 20))
-    axes = axes.flatten()
-    for img, ax in zip( images_arr, axes):
-        ax.imshow(img, cmap = "gray")
-        ax.axis('off')
-    plt.tight_layout()
-    plt.show()
 
 # custom losses
 def l1_loss_function(y_true, y_pre):
@@ -53,7 +44,7 @@ def l1_loss_function(y_true, y_pre):
 
 def scheduler(epoch):
   if epoch < 2000:
-    return 1e-4
+    return 1e-5
   else:
     return 1e-5
 
@@ -61,13 +52,14 @@ def load_data():
     pass
 
 if __name__ == '__main__':
-    # data preparation
+    # # data preparation
     train_images = load_images(gt_dir)
     print(train_images.shape)
 
     X = train_images[:-5]
     X_val = train_images[-5:]
     num_tr = len(X)
+    num_val = len(X_val)
 
     print('%d training images'%len(X))
     print('%d validation images'%len(X_val))
@@ -77,6 +69,8 @@ if __name__ == '__main__':
 
     noise_patch, gt_patch = random_crop(X_val, crop_size, lam_max)
     val_gen = augment_images_generator(noise_patch, gt_patch, batch_size)
+
+    # Data preparation
 
 
     # create the model
@@ -100,7 +94,7 @@ if __name__ == '__main__':
                                   steps_per_epoch = num_tr // batch_size,
                                   epochs= epochs,
                                   validation_data=val_gen,
-                                  validation_steps= 1,
+                                  validation_steps= 2,
                                   callbacks= [lr_scheduler, checkpointer])
 
     model.save_weights(checkpoint_path)

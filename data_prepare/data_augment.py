@@ -59,7 +59,8 @@ def random_crop(images_patch, crop_size, lam_max):
     for ind in range(size):
         gt_patch[ind] = images_patch[ind, yy[ind]:yy[ind]+crop_size,xx[ind]:xx[ind]+crop_size, :]
         # noise_img = gt + mask
-        noise_patch[ind] = np.random.poisson(chi_rng[ind] * (gt_patch[ind] + 0.5)) / chi_rng[ind] - 0.5
+        noisy_mask = np.random.poisson(gt_patch[ind])
+        noise_patch[ind] = noisy_mask + gt_patch[ind]
 
     return  noise_patch, gt_patch
 
