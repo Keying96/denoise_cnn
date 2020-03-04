@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# from model import *
-from  model2 import  *
+from model import *
+# from  model2 import  *
 from imageio import imread
 from data_prepare.create_noise_data import  *
 
@@ -11,9 +11,12 @@ import os
 import imageio
 import glob
 
-weights_path = "./dataset/checkpoint_20200303_2/"
+weights_path = "./dataset/checkpoint/"
 test_dir = "./dataset/Sony/test"
-output_dir = "./dataset/Sony/output_20200303_3"
+output_dir = "./dataset/Sony/output_20200304/"
+
+if not os.path.isdir(output_dir):
+    os.makedirs(output_dir)
 
 lam_noise = 20
 
@@ -36,6 +39,8 @@ def load_images(data_dir):
 
         name = os.path.basename(imgs_list[i])
         imgs_name.append(name)
+        # img_name = os.path.basename(name.split(".png")[0] + "_noise.png"
+        # write_noiseimg(img_noise * 255.0, output_dir, imgs_name)
 
     images = np.array(images).astype(np.float32)
     # return  np.stack(images,axis=0)[:,:,:,None], imgs_name

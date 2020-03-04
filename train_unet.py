@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # checkpointer = ModelCheckpoint(os.path.join(checkpoint_path,'model_{epoch:04d}.h5'),
     #                                monitor='loss', save_best_only=True, overwrite=True)
     if not os.path.isdir(checkpoint_path):
-        os.makedev(checkpoint_path)
+        os.makedirs(checkpoint_path)
     checkpointer = ModelCheckpoint(checkpoint_path)
 
 
