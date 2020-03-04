@@ -12,7 +12,7 @@ class UpSampleConcat(layers.Layer):
         self.output_channels = output_channels
         self.in_channels = in_channels
         self.W = tf.Variable(tf.random.truncated_normal([2, 2, output_channels, in_channels],
-                                                        stddev=0.02), name = "weight")
+                                                        stddev=0.02), name = "w1")
         super(UpSampleConcat, self).__init__(**kwargs)
 
 

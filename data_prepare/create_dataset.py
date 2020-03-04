@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
+"""
+20200228 开始尝试使用rgb noise图片作为dataset
+放弃使用 create_dataset.py
+开始使用 data_generate.py
+"""
 import numpy as np
 import  os
 import imageio
