@@ -5,7 +5,6 @@ from model import *
 # from model2 import *
 # from data_prepare.data_augment import *
 from data_prepare.data_generate import *
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
 
