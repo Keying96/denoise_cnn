@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from model import *
+from cnn.model import *
 # from model2 import *
 # from data_prepare.data_augment import *
 from data_prepare.data_generate import *
@@ -10,7 +10,6 @@ from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
 
 import tensorflow as tf
 import os
-import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -61,20 +60,20 @@ if __name__ == '__main__':
     # data preparation
     train_gen, val_gen, num_tr, num_val = load_data(rgb_dir, crop_size, lam_noise, batch_size )
 
-    # create the model
+    # create the cnn_model
     # W = train_gen[0].shape[0]
     # H = train_gen[0].shape[1]
     # C = train_gen[0].shape[2]
-    # model = unet(input_size=(W, H, C))
+    # cnn_model = unet(input_size=(W, H, C))
     model = unet()
 
-    # compile the model
+    # compile the cnn_model
     model.compile(optimizer = Adam(lr = 1e-4),
                   loss = l1_loss_function)
                   # metrics = ["accuracy"])
 
 
-    # model summary
+    # cnn_model summary
     model.summary()
 
     # train with data generator

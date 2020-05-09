@@ -29,7 +29,7 @@ class UpSampleConcat(layers.Layer):
 
         return deconv_output
 
-    # custom layer to be serializable as part of a functional model
+    # custom layer to be serializable as part of a functional cnn_model
     def get_config(self):
         config = super(UpSampleConcat,self).get_config()
         config.update({"output_channels": self.output_channels,

@@ -9,11 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# train_dir = "../dataset/tmp/gt"
-# batch_size = 10
-# epochs = 15
-# crop_size = 512
-# lam_max = 20
+
 
 def write_noiseimg(poisson_img, output_dir, input_name):
     output_dir = os.path.join(output_dir, input_name)

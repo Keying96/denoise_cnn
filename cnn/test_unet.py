@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# from model import *
-from  model2 import  *
+# from cnn_model import *
+from cnn.model import  *
 from imageio import imread
-from data_prepare.create_noise_data import  *
 
 import  numpy as  np
-import  tensorflow as tf
 import os
 import imageio
 import glob
@@ -42,7 +40,7 @@ def load_images(data_dir):
 """ Denoise test images"""
 test_set, imgs_name = load_images(test_dir)
 
-""" Re-create the model and load the weights """
+""" Re-create the cnn_model and load the weights """
 H = test_set.shape[1]
 W = test_set.shape[2]
 C = test_set.shape[3]

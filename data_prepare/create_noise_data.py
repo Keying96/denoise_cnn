@@ -16,5 +16,3 @@ def add_train_poisson_noise(x, lam):
     ouput = np.minimum(np.maximum(noise_img, 0), 255)
     return ouput
 
-def add_validation_poisson_noise():
-    return

@@ -9,11 +9,6 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
-# rgb_dir = '../dataset/Sony/tmp_rgb/'
-# test_save_dir = "../dataset/Sony/tmp_noise"
-# batch_size = 10
-# crop_size = 512
-# lam_noise = 20
 
 def write_noiseimg(poisson_img, output_dir, input_name):
     output_dir = os.path.join(output_dir, input_name)
