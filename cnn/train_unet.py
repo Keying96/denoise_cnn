@@ -1,28 +1,35 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from cnn.model import *
+from cnn.model_5layers import *
 # from model2 import *
 # from data_prepare.data_augment import *
 from data_prepare.data_generate import *
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
+from data_prepare.tools import *
 
 import tensorflow as tf
 import os
 import matplotlib.pyplot as plt
 
+local_time = get_time()
 
 # gt_dir = "./dataset/myData/gt"
-checkpoint_path = "./dataset/checkpoint/"
-rgb_dir = './dataset/Sony/rgb/'
+checkpoint_dir = "../checkpoint_list/"
 
-batch_size = 3
+train_data_dir = '../dataset/Sony/train_data/'
+# train_data_dir = "../dataset/caltechPedestrians/Original_train/"
+# train_data_dir = '../dataset/Sony/test/'
+
+
+batch_size = 5
 epochs = 10
 SAVE_EVERY = 2
 crop_size = 512
 lam_noise = 20
-
+# val_number = 234
+val_number = 50
 
 # custom losses
 def l1_loss_function(y_true, y_pre):
@@ -34,13 +41,14 @@ def scheduler(epoch):
   else:
       return 1e-4
 
-def load_data(rgb_dir, crop_size, lam_noise, batch_size):
+def load_data(train_data_dir, crop_size, lam_noise, batch_size):
 
-    train_images = load_images(rgb_dir)
+    train_images = load_data_images(train_data_dir)
+    # print(train_images)
     print(train_images.shape)
 
-    X = train_images[:-5]
-    X_val = train_images[-5:]
+    X = train_images[:-val_number]
+    X_val = train_images[-val_number:]
 
     num_tr = len(X)
     num_val = len(X_val)
@@ -58,19 +66,14 @@ def load_data(rgb_dir, crop_size, lam_noise, batch_size):
 
 if __name__ == '__main__':
     # data preparation
-    train_gen, val_gen, num_tr, num_val = load_data(rgb_dir, crop_size, lam_noise, batch_size )
+    train_gen, val_gen, num_tr, num_val = \
+        load_data(train_data_dir, crop_size, lam_noise, batch_size )
 
-    # create the cnn_model
-    # W = train_gen[0].shape[0]
-    # H = train_gen[0].shape[1]
-    # C = train_gen[0].shape[2]
-    # cnn_model = unet(input_size=(W, H, C))
-    model = unet()
+    model, model_name = unet()
 
     # compile the cnn_model
     model.compile(optimizer = Adam(lr = 1e-4),
                   loss = l1_loss_function)
-                  # metrics = ["accuracy"])
 
 
     # cnn_model summary
@@ -78,8 +81,10 @@ if __name__ == '__main__':
 
     # train with data generator
     lr_scheduler  = LearningRateScheduler(scheduler)
-    # checkpointer = ModelCheckpoint(os.path.join(checkpoint_path,'model_{epoch:04d}.h5'),
-    #                                monitor='loss', save_best_only=True, overwrite=True)
+
+    # checkpoint: network name, last loss train time
+    checkpoint_dir = os.path.join(checkpoint_dir,"{}_{}".format(model_name,local_time))
+    checkpoint_path = os.path.join(checkpoint_dir,"{}_{}".format(model_name,local_time))
     if not os.path.isdir(checkpoint_path):
         os.makedirs(checkpoint_path)
     checkpointer = ModelCheckpoint(checkpoint_path)
@@ -93,7 +98,6 @@ if __name__ == '__main__':
                                   callbacks= [lr_scheduler, checkpointer])
 
     model.save_weights(checkpoint_path)
-
     loss = history.history["loss"]
     val_loss = history.history['val_loss']
     epochs_range = range(epochs)
@@ -104,4 +108,6 @@ if __name__ == '__main__':
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
+    fig_path = os.path.join(checkpoint_path, "train_result.png")
+    plt.savefig(fig_path)
     plt.show()

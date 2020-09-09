@@ -55,4 +55,4 @@ def unet(pretrained_weight = None, input_size = (512, 512, 3)):
     if (pretrained_weight):
         model.load_weights(pretrained_weight)
 
-    return  model
+    return  model,"UNet_7layers"

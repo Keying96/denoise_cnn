@@ -10,27 +10,31 @@ import os
 
 # overlap_px_list = [5,4,3,2,1,0]
 overlap_px = 5
-tile_number = 4
+# tile_number = 120
+# tile_number_set =[30,24,20]
+# tile_number_set =[1,2,3]
+tile_number = 1
 elect_px = 2
 lam_noise = 20
 data_psnr = {}
 
 # input_dir = "../dataset/super_resolution/sp_test/test"
-input_dir = "../dataset/full_HD/original_mot16"
+# input_dir = "../dataset/full_HD/original_mot16/crop120"
+input_dir = "../dataset/full_HD/original_mot16/test"
+
 
 output_dir = os.path.join(input_dir, "output_tiles")
 weights_path = "../dataset/checkpoint/"
-xls_path = os.path.join(output_dir, "psnr_tiles_{}{}{}.xlsx".format("overlaps_", str(tile_number),"_tiles0521"))
+xls_path = os.path.join(output_dir, "psnr_tiles_{}.xlsx".format("overlaps_tiles0528"))
 if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
 
 workbook, worksheet = tools.create_workbook(xls_path)
 ori_imgs, imgs_name = tools.load_images(input_dir)
-# print("imgs_name;{}".format(imgs_name))
 
-# for overlap_px in overlap_px_list:
-#     overlap_px = overlap_px
+# for tile_number in tile_number_set:
+#     tile_number  = tile_number
 for ind, img in enumerate(ori_imgs):
     img_name = imgs_name[ind].split(".jpg")[0]
 
@@ -44,8 +48,6 @@ for ind, img in enumerate(ori_imgs):
     # tiles_set = split_images2_4pathes(overlap_noise_img, overlap_px)
     # tiles_set = split_images2_16pathes(overlap_noise_img, overlap_px)
     tiles_set = split_images2_random_pathes(overlap_noise_img, overlap_px, tile_number)
-    # tiles_set = tiles_set[0:12][0:12][:]
-    tiles_set = tiles_set[:][:][:]
 
 
     H = tiles_set[0][0].shape[0]
@@ -65,7 +67,9 @@ for ind, img in enumerate(ori_imgs):
         pre_tiles = []
         for w in range(len(tiles_set[0])):
             tile = np.expand_dims(tiles_set[h][w], axis=0)
+            write_img(tiles_set[h][w] * 255.0, output_dir, "tile_{}_{}_{}{}.jpg".format(tile_number, img_name,str(h),str(w)))
             pre_img = model.predict(tile)[0]
+            write_img(np.minimum(np.maximum(pre_img, 0), 1)* 255.0, output_dir, "pretile_{}_{}_{}{}.jpg".format(tile_number, img_name,str(h),str(w)))
             pre_tiles.append(pre_img)
         pre_tile_set.append(pre_tiles)
 

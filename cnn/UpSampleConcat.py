@@ -13,8 +13,13 @@ class UpSampleConcat(layers.Layer):
         self.in_channels = in_channels
         self.W = tf.Variable(tf.random.truncated_normal([2, 2, output_channels, in_channels],
                                                         stddev=0.02), name = "w1")
+        # self.W = tf.keras.backend.variable(tf.random.truncated_normal([2, 2, output_channels, in_channels],
+        #                                                 stddev=0.02), name = "w1")
         super(UpSampleConcat, self).__init__(**kwargs)
 
+    # def build(self, input_shape):
+        # self.W = tf.Variable(tf.random.truncated_normal([2, 2, self.output_channels, self.in_channels],
+        #                                                 stddev=0.02), name = "w1")
 
     def call(self, x1,x2):
         """
@@ -24,8 +29,11 @@ class UpSampleConcat(layers.Layer):
         """
         deconv = tf.nn.conv2d_transpose(x1, self.W, tf.shape(x2),
                                         strides=[1, self.pool_size, self.pool_size, 1])
+        # deconv = layers.Lambda(lambda x: tf.nn.conv2d_transpose(x, self.W, tf.shape(x2),
+        #                                 strides=[1, self.pool_size, self.pool_size, 1]))(x1)
         deconv_output = layers.concatenate([deconv,x2], axis = 3)
         deconv_output.set_shape([None, None, None, self.output_channels * 2])
+        # deconv_output = layers.Lambda(lambda x:x.set_shape([None, None, None, self.output_channels * 2]))(deconv_output)
 
         return deconv_output
 
@@ -33,5 +41,10 @@ class UpSampleConcat(layers.Layer):
     def get_config(self):
         config = super(UpSampleConcat,self).get_config()
         config.update({"output_channels": self.output_channels,
-                      "in_channels": self.in_channels})
+                      "in_channels": self.in_channels,
+                       "up_sample_pool_size":self.pool_size})
+        #
+        # config.update({"output_channels": self.output_channels,
+        #               "in_channels": self.in_channels})
+
         return config

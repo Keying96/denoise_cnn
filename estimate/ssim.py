@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from cnn.model import *
+from cnn.model_5layers import *
 # from  model2 import  *
 from imageio import imread
 from data_prepare.create_noise_data import  *

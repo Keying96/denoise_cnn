@@ -4,9 +4,6 @@ import tensorflow as tf
 import numpy as np
 import math
 
-def elect_pixels(np_img):
-
-    return elect_pixels
 
 def estimate_tf_psnr(ori_img, pre_img):
     ori_img = tf.image.convert_image_dtype(ori_img, tf.float32)

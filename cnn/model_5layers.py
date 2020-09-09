@@ -1,15 +1,27 @@
 #!/usr/bin/env python
 # encoding: utf-8
 from cnn.UpSampleConcat import *
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
 
 import tensorflow as tf
 
+# custom losses
+def l1_loss_function(y_true, y_pre):
+    return tf.reduce_mean(tf.abs(y_true - y_pre))
+
+def scheduler(epoch):
+  if epoch > 2000:
+    return 1e-5
+  else:
+      return 1e-4
 
 # 自定义激活函数
 def lrelu(x):
     return tf.maximum(x * 0.2, x)
 
-def unet(pretrained_weight = None, input_size = (512, 512, 3)):
+# 5 layers
+def unet(pretrained_weight = None, input_size = (321, 481, 3)):
     #define input layer
     inputs = layers.Input(input_size)
 
@@ -46,8 +58,17 @@ def unet(pretrained_weight = None, input_size = (512, 512, 3)):
 
 
     if (pretrained_weight):
-        model.load_weights(pretrained_weight)
+        status = model.load_weights(pretrained_weight)
+        status.assert_existing_objects_matched()
 
-    return  model
+    # compile the cnn_model
+    lr_scheduler  = LearningRateScheduler(scheduler)
+    model.compile(optimizer = Adam(lr = 1e-4), loss = l1_loss_function)
 
 
+    return  model, "UNet_5layers"
+
+
+if __name__ == '__main__':
+    model, name = unet()
+    model.summary()

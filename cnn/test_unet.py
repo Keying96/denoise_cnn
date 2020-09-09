@@ -1,63 +1,56 @@
 #!/usr/bin/env python
 # encoding: utf-8
-# from cnn_model import *
-from cnn.model import  *
-from imageio import imread
+from cnn.model_5layers import *
+# from  model2 import  *
+from data_prepare.tools import *
+from data_prepare.data_generate import *
+from data_prepare.create_noise_data import *
 
-import  numpy as  np
-import os
-import imageio
-import glob
+import numpy as np
+import time
 
-weights_path = "./dataset/checkpoint/"
-test_dir = "./dataset/Sony/tmp_rgb"
-output_dir = "./dataset/Sony/output"
+weights_path = "../checkpoint_list/checkpoint_UNet_5layers_200612_3092/UNet_5layers_200612_30902"
+# input_dir = "../dataset/caltechPedestrians/test"
+input_dir = "../dataset/caltechPedestrians/parallel_test"
+output_dir = "../dataset/caltechPedestrians/parallel_test/output_tile_single"
+xls_path = os.path.join(output_dir, "single_runtime.xls")
 
-def write_noiseimg(poisson_img, output_dir, input_name):
-    output_dir = os.path.join(output_dir, input_name)
-    imageio.imwrite(output_dir, poisson_img.astype("uint8"))
+isexist(output_dir)
 
 
-""" Load test images"""
-def load_images(data_dir):
-    imgs_list = glob.glob(data_dir + "/*.png")  # get name list of all .png files
-    images = []
-    imgs_name = []
+# def run(image_names, test_imgs):
+def run(input_dir, lam_noise, data_string):
+    gt_imgs, image_names = load_data_images(input_dir)
+    test_imgs = poisson_noise_imgs(gt_imgs,lam_noise)
+    H, W, C = get_img_HWC(test_imgs)
 
-    for i in range(len(imgs_list)):
-        img_path = imgs_list[i]
-        ori_img = imread(img_path)
-        noisy_mask = np.random.poisson(ori_img)
-        poi_img = noisy_mask + ori_img
-        images.append(poi_img) # 0 is grayscale mode
-        name = os.path.basename(imgs_list[i])
-        imgs_name.append(name)
+    data_string.append(len(test_imgs)+1)
 
-    images = np.array(images).astype(np.float32)
-    return  np.stack(images,axis=0)[:,:,:,None], imgs_name
-    # return  np.stack(images,axis=0), imgs_name
+    model, model_name = unet(pretrained_weight=weights_path, input_size=(H, W, C))
 
-""" Denoise test images"""
-test_set, imgs_name = load_images(test_dir)
+    for ind, test_img in enumerate(test_imgs):
+        test_img = np.expand_dims(test_img, axis=0)
 
-""" Re-create the cnn_model and load the weights """
-H = test_set.shape[1]
-W = test_set.shape[2]
-C = test_set.shape[3]
+        pre_img = model(test_img)[0]
+        pre_img = np.minimum(np.maximum(pre_img, 0), 255)
+        pre_name = image_names[ind].split(".") [0] + "_pre.jpg"
+        write_img(pre_img, output_dir, pre_name)
 
-model = unet(input_size=(H, W, C))
-model.load_weights(weights_path)
-model.summary()
 
-for ind, img in enumerate(test_set):
-    test_img = np.expand_dims(img, axis=0)
-    # gt_img = img
-    print ("gt_img.shape:{}".format(test_img.shape))
-    img_name = os.path.basename(imgs_name[ind]).split("_gt")[0] + "_test.png"
-    write_noiseimg(test_img[0], output_dir, img_name)
-    pre_img = model.predict(test_img)[0]
-    print ("pre_img .shape:{}".format(pre_img.shape))
-    img_name = os.path.basename(imgs_name[ind]).split("_gt")[0] + "_pre.png"
-    write_noiseimg(pre_img, output_dir, img_name)
+
+if __name__ == '__main__':
+    lam_noise = 20
+
+    # ImgNum, SleepTime, TileSize, Runtime
+    data_string = []
+
+    start_time = time.time()
+    run(input_dir, lam_noise, data_string)
+    run_time = time.time() -start_time
+    data_string.append(run_time)
+    print("the run time of single program is {}s".format(run_time))
+    insert_worksheet(xls_path, data_string)
+
+
 
 

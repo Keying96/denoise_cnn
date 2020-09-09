@@ -24,25 +24,37 @@ def plotImages(images_arr):
     plt.show()
 
 """ Load dataset"""
-def load_images(data_dir):
+def load_data_images(data_dir):
+    from PIL import ImageFile
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+
     imgs_list = glob.glob(data_dir + "/*.png") # get name list of all .png files
+    imgs_list.extend(glob.glob(data_dir + "/*.jpg"))
+    imgs_list.extend(glob.glob(data_dir + "/*.JPG"))
+
     print ("the size of imgs: {}".format(len(imgs_list)))
 
     # initrialize
     images = []
+    image_names = []
 
     for i in range(len(imgs_list)):
         img_path = imgs_list[i]
         images.append(imread(img_path)) # 0 is grayscale mode
 
+        name = os.path.basename(imgs_list[i])
+        image_names.append(name)
+
+    print(len(images))
     images = np.array(images).astype(np.float32)
     # return  np.stack(images,axis=0)[:,:,:,None]
-    return  np.stack(images,axis=0)
+    return  np.stack(images,axis=0), image_names
 
 
 """ Random crops of the image """
 def random_crop(images_patch, crop_size, lam_noise):
     size = len(images_patch)
+    print (images_patch[0].shape)
 
     yy = np.random.randint(images_patch.shape[1] - crop_size, size=size)
     xx = np.random.randint(images_patch.shape[2]-crop_size,size=size)
@@ -57,11 +69,9 @@ def random_crop(images_patch, crop_size, lam_noise):
         gt_patch[ind] = curr_gt / 255.0
         noise_patch[ind] = add_train_poisson_noise(curr_gt, lam_noise) / 255.0
 
-        # write_noiseimg(noise_patch[ind], test_save_dir, "noise_{}.png".format(ind))
-        # write_noiseimg(gt_patch[ind], test_save_dir, "gt_{}.png".format(ind))
-        # print (" crop and noise")
-
     return  noise_patch, gt_patch
+
+
 
 
 """ Augment by rotating and flipping """
@@ -93,6 +103,10 @@ def augment_images_generator(noise_patch, gt_patch, batch_size):
 
             # return noise_batch, gt_batch
             yield noise_batch, gt_batch
+
+# if __name__ == '__main__':
+#     train_data_dir = '../dataset/myData/gt_test/'
+#     train_images = load_images(train_data_dir)
 
 # train_images = load_images(rgb_dir)
 # print(train_images.shape)
