@@ -10,6 +10,8 @@ import numpy as np
 import time
 
 weights_path = "../checkpoint_list/checkpoint_UNet_5layers_200612_3092/UNet_5layers_200612_30902"
+# weights_path = "/home/zhu/PycharmProjects/denoise_cnn/openvion/UNet_5layers_20-09-11-15-55"
+
 # input_dir = "../dataset/caltechPedestrians/test"
 input_dir = "../dataset/caltechPedestrians/parallel_test"
 output_dir = "../dataset/caltechPedestrians/parallel_test/output_tile_single"
@@ -33,7 +35,9 @@ def run(input_dir, lam_noise, data_string):
 
         pre_img = model(test_img)[0]
         pre_img = np.minimum(np.maximum(pre_img, 0), 255)
-        pre_name = image_names[ind].split(".") [0] + "_pre.jpg"
+        pre_name = image_names[ind].split(".") [0] + "_pre0924.jpg"
+        print(pre_img.shape)
+        print(pre_img)
         write_img(pre_img, output_dir, pre_name)
 
 

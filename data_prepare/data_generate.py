@@ -25,8 +25,8 @@ def plotImages(images_arr):
 
 """ Load dataset"""
 def load_data_images(data_dir):
-    from PIL import ImageFile
-    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    # from PIL import ImageFile
+    # ImageFile.LOAD_TRUNCATED_IMAGES = True
 
     imgs_list = glob.glob(data_dir + "/*.png") # get name list of all .png files
     imgs_list.extend(glob.glob(data_dir + "/*.jpg"))

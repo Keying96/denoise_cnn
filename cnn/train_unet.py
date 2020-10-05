@@ -43,8 +43,8 @@ def scheduler(epoch):
 
 def load_data(train_data_dir, crop_size, lam_noise, batch_size):
 
-    train_images = load_data_images(train_data_dir)
-    # print(train_images)
+    train_images, image_names = load_data_images(train_data_dir)
+    print(train_images)
     print(train_images.shape)
 
     X = train_images[:-val_number]
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     train_gen, val_gen, num_tr, num_val = \
         load_data(train_data_dir, crop_size, lam_noise, batch_size )
 
-    model, model_name = unet()
+    model, model_name = unet(input_size=(crop_size, crop_size, 3))
 
     # compile the cnn_model
     model.compile(optimizer = Adam(lr = 1e-4),
@@ -97,7 +97,9 @@ if __name__ == '__main__':
                                   validation_steps= 2,
                                   callbacks= [lr_scheduler, checkpointer])
 
-    model.save_weights(checkpoint_path)
+    # model.save_weights(checkpoint_path)
+    model.save(checkpoint_path)
+
     loss = history.history["loss"]
     val_loss = history.history['val_loss']
     epochs_range = range(epochs)

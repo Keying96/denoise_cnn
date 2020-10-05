@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
+# tensorflow == 2.0.0
 from cnn.UpSampleConcat import *
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import  LearningRateScheduler, ModelCheckpoint
+
 
 import tensorflow as tf
 
